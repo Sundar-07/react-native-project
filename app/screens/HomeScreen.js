@@ -5,26 +5,24 @@ import {
   FlatList,
   Button,
   SafeAreaView,
-  TouchableOpacity
+  TouchableOpacity,
 } from "react-native";
 import React, { useState, useEffect } from "react";
 import TodoItem from "../components/TodoItem";
 import axios from "axios";
-import { Input, Icon} from "@rneui/themed";
+import { Input, Icon } from "@rneui/themed";
 
 export default function HomeScreen() {
   const [items, setItems] = useState([]);
-const [enteredText, setEnteredText] = useState("");
+  const [enteredText, setEnteredText] = useState("");
 
-
-const [title, setTitle] = useState("");
-const [description, setDescription] = useState("");
-const [ratings, setRatings] = useState("");
-
+  const [title, setTitle] = useState("");
+  const [description, setDescription] = useState("");
+  const [ratings, setRatings] = useState("");
 
   useEffect(() => {
     axios
-      .get("http://192.168.1.3:5000/api/todos/")
+      .get("http://localhost:5000/api/todos/")
       .then((response) => {
         // console.log("Data: ", response.data);
         setItems(response.data);
@@ -35,22 +33,29 @@ const [ratings, setRatings] = useState("");
   //delete
   const removeItem = (id) => {
     axios
-      .delete(`http://192.168.1.3:5000/api/todos/${id}`)
+      .delete(`http://localhost:5000/api/todos/${id}`)
       .then((response) => {
         console.log("Deleted ");
-        setItems(response.data)
+        setItems(response.data);
       })
       .catch((error) => console.log("Error specified while deleting: ", error));
   };
-//addItem
+  //addItem
   const addItem = () => {
+    const data = {
+      title,description,ratings
+    }
     axios
-      .post(`http://192.168.1.3:5000/api/todos/`,{title:title,description:description,ratings:ratings})
+      .post(`http://localhost:5000/api/todos/`, data)
       .then((response) => {
         console.log("Added ");
         // setItems(response.data);
+        setTitle("");
+        setDescription("");
+        setRatings("");
       })
       .catch((error) => console.log("Error specified while deleting: ", error));
+    // console.log("added",data);
   };
 
   return (
@@ -72,26 +77,24 @@ const [ratings, setRatings] = useState("");
         <Input
           placeholder="Enter your title"
           value={title}
-          onChange={(e) => setTitle(e.target.value)}
-          
+          onChangeText={(text) => setTitle(text)}
         />
         <Input
           placeholder="Enter your description"
           value={description}
-          onChange={(e) => setDescription(e.target.value)}
-          
+          onChangeText={(text) => setDescription(text)}
         />
         <Input
           placeholder="Enter your ratings"
           keyboardType="number-pad"
           value={ratings}
-          onChange={(e) => setRatings(e.target.value)}
-          
+          onChangeText={(text) => setRatings(text)}
         />
         <View>
-          <Button title="Add Todo" onPress={addItem}/>
+          <Button title="Add Todo" onPress={addItem} />
         </View>
       </View>
+      
     </View>
   );
 }
